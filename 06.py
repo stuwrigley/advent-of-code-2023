@@ -8,7 +8,7 @@ with open(inputFilename) as f:
 
 
 def distanceTravelled(buttonPressTime, raceDuration):
-    return raceDuration * buttonPressTime - (buttonPressTime * buttonPressTime)
+    return buttonPressTime * (raceDuration - buttonPressTime)
 
 
 # part 1
