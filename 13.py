@@ -7,12 +7,6 @@ inputFilename = 'data/' + DAY + '_input' + ('_test' if TEST else '') + '.txt'
 with open(inputFilename) as f:
     lines = [line.rstrip() for line in f]
 
-patternBreaks = []
-for i, line in enumerate(lines):
-    if line == '':
-        patternBreaks.append(i)
-patternBreaks.append(len(lines))
-
 
 def findHorizontalMirrorPoint(pattern):
     mirrorPoints = []
@@ -48,16 +42,20 @@ def verifyVMP(pattern, pos):
     return True
 
 
-def printPattern(pattern, offset):
+def printPattern(pattern, offset=0):
     for line in pattern:
-        print('' * offset + line)
+        print(' ' * offset + line)
 
 
-# for each pattern
+patternBreaks = []
+for i, line in enumerate(lines):
+    if line == '':
+        patternBreaks.append(i)
+patternBreaks.append(len(lines))
 part1score = 0
 part2score = 0
 patternStart = 0
-for patternCount, patternBreak in enumerate(patternBreaks):
+for patternCount, patternBreak in enumerate(patternBreaks):  # for each pattern
     pattern = []
     for i in range(patternStart, patternBreak):
         pattern.append(lines[i])
@@ -100,6 +98,4 @@ for patternCount, patternBreak in enumerate(patternBreaks):
         part2score += vmp + 1
 
 print("Part 1 answer:", part1score)
-
-# part 2
 print("Part 2 answer:", part2score)
