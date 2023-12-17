@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import math
 import heapq
 
 DAY = '17'
@@ -19,35 +18,33 @@ def newDirections(curDir):
 def solve(doPart1):
     numRows = len(lines)
     numCols = len(lines[0])
-    stillToProcess = [(0, (0, 0), (0, 1), 0)]  # heatLoss, row, col, direction, stepsInThisDirection
-    seen = {}
+    stillToProcess = [(0, (0, 0), (0, 1), 0)]  # heatLoss, position, direction, stepsInThisDirection
+    seen = set()
     while stillToProcess:
-        heatLoss, pos, direction, stepsInThisDirection = heapq.heappop(stillToProcess)
+        heatLoss, (row, col), (rowDir, colDir), stepsInThisDirection = heapq.heappop(stillToProcess)
 
-        if (pos, direction, stepsInThisDirection) in seen:
+        if row == numRows - 1 and col == numCols - 1:
+            if doPart1:
+                return heatLoss
+            elif stepsInThisDirection >= 4:
+                return heatLoss
+
+        if ((row, col), (rowDir, colDir), stepsInThisDirection) in seen:
             continue
-        seen[(pos, direction, stepsInThisDirection)] = heatLoss
+        seen.add(((row, col), (rowDir, colDir), stepsInThisDirection))
 
-        for count, newDir in enumerate(newDirections(direction)):
-            if doPart1 and count == 0 and stepsInThisDirection == 3:  # first new dir is always previous dir
-                continue
-            if not doPart1 and ((count > 0 and stepsInThisDirection < 4) or (count == 0 and stepsInThisDirection >= 10)):
-                continue
-
+        for count, newDir in enumerate(newDirections((rowDir, colDir))):
             if count == 0:
                 newStepsInThisDirection = stepsInThisDirection + 1
             else:
                 newStepsInThisDirection = 1
 
-            nextPos = (pos[0] + newDir[0], pos[1] + newDir[1])
-            if 0 <= nextPos[0] < numRows and 0 <= nextPos[1] < numCols:
-                heapq.heappush(stillToProcess, (heatLoss + int(lines[nextPos[0]][nextPos[1]]), nextPos, newDir, newStepsInThisDirection))
-
-    smallestHeatLoss = math.inf
-    for (pos, direction, stepsInThisDirection), heatLoss in seen.items():
-        if pos[0] == numRows - 1 and pos[1] == numCols - 1:
-            smallestHeatLoss = min(smallestHeatLoss, heatLoss)
-    return smallestHeatLoss
+            if (doPart1 and newStepsInThisDirection <= 3) or (
+                    not doPart1 and (stepsInThisDirection < 10 and count == 0) or (stepsInThisDirection >= 4 and count > 0)):
+                nr = row + newDir[0]
+                nc = col + newDir[1]
+                if 0 <= nr < numRows and 0 <= nc < numCols:
+                    heapq.heappush(stillToProcess, (heatLoss + int(lines[nr][nc]), (nr, nc), newDir, newStepsInThisDirection))
 
 
 # part 1
